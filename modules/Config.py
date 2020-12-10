@@ -8,7 +8,7 @@ img = pygame.image.load(path.join(images_folder, 'money.png'))
 
 BG_IMG = pygame.image.load(path.join(images_folder, 'BG_IMG.png'))
 FARMER_IMG = pygame.image.load(path.join(images_folder, 'FARMER_IMG.png'))
-FISHING_IMG = pygame.image.load(path.join(images_folder, 'fishing.png'))
+FISHING_IMG = pygame.transform.scale(pygame.image.load(path.join(images_folder, 'fishing.png')), (130, 140))
 FARMER_SHEET = pygame.image.load(path.join(images_folder, 'FARMER_SHEET.png'))
 
 CHICKEN_IMG = pygame.image.load(path.join(images_folder, 'chicken.png'))
@@ -17,6 +17,11 @@ FISH_IMG = [
     pygame.image.load(path.join(images_folder, 'smallfish.png')),
     pygame.image.load(path.join(images_folder, 'mediumfish.png')),
     pygame.image.load(path.join(images_folder, 'largefish.png'))]
+
+CORN_IMG = [
+    pygame.image.load(path.join(images_folder, 'corn_start.png')),
+    pygame.image.load(path.join(images_folder, 'corn_mid.png')),
+    pygame.image.load(path.join(images_folder, 'corn_full_2.png'))]
 
 pygame.font.init()
 

@@ -1,4 +1,6 @@
+import random
 import pygame
+from pygame.sprite import AbstractGroup
 
 from modules.Config import FISH_IMG
 from modules.Object import Object
@@ -7,8 +9,58 @@ from modules.Object import Object
 class Fish(Object):
     count = 0
 
-    def __init__(self, image, area):
-        super().__init__(image, 35, 35, area)
+    def __init__(self, x, y, image):
+        Object.__init__(self, image, x, y)
+        self.is_auto = False
+
+    def click(self, event, target, mouse, click, money):
+        x, y, w, h = target.rect
+        print(x, y, w, h)
+        print(mouse)
+        if x + w > mouse[0] > x and y + h > mouse[1] > y:
+            if click[0] == 1:
+                event('fish', target, False)
+                money.point += 100
+                return True
+
+    def get_click(self):
+        return lambda event, target, mouse, click, money: self.click(event, target, mouse, click, money)
+
+
+class FishMonitor(pygame.sprite.Sprite):
+
+    def __init__(self, event: classmethod) -> None:
+        super().__init__()
+        self.image = pygame.Surface((100, 10))
+        self.image.fill((0, 0, 0))
+        self.rect = self.image.get_rect()
+        self.rect.center = (210, 220)
+        self.is_running = False
+        self.event = event
+        self.bar_x = 0
+        self.flag_x = random.randint(0, 100)
+        self.move = 10
+        event('player', self)
+        self.flag = pygame.Surface((20, 10))
+        self.flag.fill((0, 255, 0))
+        self.point = pygame.Surface((10, 10))
+        self.point.fill((255, 0, 0))
+
+    def kill(self) -> None:
+        self.event('player', self, False)
+
+    def update(self) -> None:
+        self.image.fill((0, 0, 0))
+        self.image.blit(self.flag, (self.flag_x, 0))
+        self.image.blit(self.point, (self.bar_x, 0))
+        self.bar_x = (self.bar_x + self.move) % 100
+
+    def success(self) -> bool:
+        self.move = 0
+        print(abs(self.bar_x - self.flag_x))
+        if abs(self.bar_x - self.flag_x) < 30:
+            return True
+        return False
 
 
 class Fishing(pygame.Surface):
@@ -27,14 +79,9 @@ class Fishing(pygame.Surface):
         self.player = player
 
     def add(self, event: classmethod):
-        # if not Fishing.do_fishing:
-        # fish = Fish(FISH_IMG[0], self.fishing_area)
-        # event('player', fish)
-        # Fish.count += 1
-        # print(Fish.count)
-        print('test')
-        self.player.set_fishing_mod(False)
-        self.player.rect.center = (210, 190)
+        self.player.set_fishing_mod()
+        self.player.rect.center = (150, 100)
+        self.__setattr__('bar', FishMonitor(event))
 
     def get_sell_rect(self) -> pygame.Rect:
         return self.act_area

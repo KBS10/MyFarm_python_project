@@ -1,7 +1,9 @@
 import pygame
 
+from .. import Game
 from ..Config import CHICKEN_IMG
 from ..Object import Object
+import modules
 
 
 class Chicken(Object):
@@ -40,10 +42,13 @@ class Coop(pygame.Surface):
         self.sell_area = pygame.Rect(850, 380, 160, 100)
 
     def add(self, event: classmethod):
+        if Game.Game.money.point < 50:
+            return
         chicken = Chicken(self.coop_area.centerx, self.coop_area.centery, self.coop_area)
         event('chicken', chicken)
         Chicken.count += 1
         print(Chicken.count)
+        Game.Game.money.point -= 50
 
     def get_sell_rect(self) -> pygame.Rect:
         return self.sell_area

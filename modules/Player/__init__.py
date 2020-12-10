@@ -5,7 +5,7 @@ from modules.Object import Object
 
 
 class Farmer(Object):
-    def __init__(self):
+    def __init__(self) -> object:
         self.left_states = {0: (1850, 7, 55, 72), 1: (1770, 6, 55, 72), 2: (1691, 6, 55, 72), 3: (1610, 6, 55, 72)}
         self.right_states = {0: (13, 6, 55, 70), 1: (93, 6, 55, 72), 2: (173, 6, 55, 72), 3: (253, 6, 55, 72)}
         self.up_states = {0: (13, 404, 55, 72), 1: (93, 404, 55, 72), 2: (173, 404, 55, 72), 3: (253, 404, 55, 72)}
@@ -19,15 +19,18 @@ class Farmer(Object):
         self.is_auto = False
         self.fishing_mod = False
 
-    def set_fishing_mod(self, fishing_mod):
-        if fishing_mod:
-            self.image = FARMER_IMG
-        else:
-            self.image = FISHING_IMG
+    def update(self, direction):
+        super().update(direction)
+        if direction == 'reset':
+            self.update('down')
+
+    def set_fishing_mod(self):
+        self.fishing_mod = True
+        self.image = FISHING_IMG
 
     def handle_event(self, event):
         act = True
-        if len(self.block_area) > 0:
+        if len(self.block_area) > 0 and not self.fishing_mod:
             for block in self.block_area:
                 block = block.get_rect() if type(block) is not pygame.Rect else block
                 if self.rect.colliderect(block):
@@ -42,6 +45,8 @@ class Farmer(Object):
                     act = False
 
         if event.type == pygame.KEYDOWN and act:
+            if self.fishing_mod is True:
+                self.fishing_mod = False
             if event.key == pygame.K_LEFT:
                 self.update('left')
             if event.key == pygame.K_RIGHT:
@@ -68,11 +73,13 @@ class Farmer(Object):
         self.sell_area.extend(stuff)
 
     def act_handler(self, event, handler):
+        act = True
         if len(self.sell_area) > 0:
             for block in self.sell_area:
                 block_rect = block.get_sell_rect() if type(block) is not pygame.Rect else block
                 if block_rect.contains(self.rect) or block_rect.colliderect(self.rect):
                     print(block)
                     if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_SPACE:
+                        if event.key == pygame.K_SPACE and act:
                             block.add(handler)
+                            act = False

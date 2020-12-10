@@ -1,5 +1,5 @@
-import modules
+from modules.Game import Game, game_intro
 
-pygame = modules.Game()
-
-pygame.run()
+pygame = Game()
+game_intro(pygame.run)
+# pygame.run()

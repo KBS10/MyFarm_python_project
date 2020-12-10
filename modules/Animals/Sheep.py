@@ -1,5 +1,7 @@
 import pygame
 
+import modules
+from .. import Game
 from ..Config import SHEEP_IMG
 from ..Object import Object
 
@@ -40,10 +42,13 @@ class Pasture(pygame.Surface):
         self.act_area = pygame.Rect(620, 390, 230, 100)
 
     def add(self, event: classmethod):
+        if Game.Game.money.point < 100:
+            return
         sheep = Sheep(self.pasture_area.centerx, self.pasture_area.centery, self.pasture_area)
         event('chicken', sheep)
         Sheep.count += 1
         print(Sheep.count)
+        Game.Game.money.point -= 100
 
     def get_sell_rect(self) -> pygame.Rect:
         return self.act_area
